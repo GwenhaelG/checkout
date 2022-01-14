@@ -1,7 +1,5 @@
 const express = require('express');
-const cors = require('cors');
 const routes = require('./routes');
-const config = require('./config');
 const {
   notFoundMiddleware,
   errorHandlerMiddleware,
@@ -10,9 +8,6 @@ const {
 // Create a new Express app
 const app = express();
 app.use(express.static('public'));
-
-// Accept cross-origin requests from the frontend app
-app.use(cors({ origin: config.corsOrigins }));
 
 // Unsecure route -- returns one invite by hash
 const bodyParser = require('body-parser');
