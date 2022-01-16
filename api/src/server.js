@@ -1,5 +1,6 @@
 const express = require('express');
 const routes = require('./routes');
+const cors = require('cors');
 const {
   notFoundMiddleware,
   errorHandlerMiddleware,
@@ -8,6 +9,13 @@ const {
 // Create a new Express app
 const app = express();
 app.use(express.static('public'));
+
+// Accept cross-origin requests from the frontend app
+app.use(
+  cors({
+    origin: ['http://localhost:3000', 'localhost:3000'],
+  })
+);
 
 // Unsecure route -- returns one invite by hash
 const bodyParser = require('body-parser');

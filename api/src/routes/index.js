@@ -7,7 +7,7 @@ routes.get('/', async (req, res) => {
 });
 
 // Test routes
-const tests = require('./test');
-routes.use('/test', tests);
+const products = require('./products');
+routes.use('/product', products);
 
 module.exports = routes;

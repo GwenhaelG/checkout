@@ -1,1 +1,1 @@
-# EduMe
+# Checkout.com

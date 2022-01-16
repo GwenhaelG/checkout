@@ -15,7 +15,6 @@ type AppContextInterface = {
   links: LinksProps[];
 };
 
-// Define your routes here
 const links: LinksProps[] = [
   {
     name: 'Home',

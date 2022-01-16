@@ -1,8 +1,9 @@
 import React from 'react';
 import { Typography, Grid } from '@mui/material';
-import Form from '../components/form';
 
-const Home = () => {
+import ProductReviewPage from './ProductReviewPage';
+
+const Review = () => {
   return (
     <>
       <Grid
@@ -14,16 +15,19 @@ const Home = () => {
           variant='h4'
           gutterBottom
           component='div'
-          style={{ marginBottom: '5vh' }}
+          style={{ marginBottom: '5vh', padding: '20px' }}
         >
-          Appear Here interview
+          Checkout.com interview
         </Typography>
       </Grid>
-      <Grid container justifyContent='center'>
-        <Form />
+      <Grid container>
+        <ProductReviewPage
+          productId={1}
+          productTitle={'Super Awesome Product'}
+        />
       </Grid>
     </>
   );
 };
 
-export default Home;
+export default Review;
