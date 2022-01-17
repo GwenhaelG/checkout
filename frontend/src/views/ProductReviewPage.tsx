@@ -1,6 +1,17 @@
+/* ProductReviewPage
+
+Purpose: to control how the product review page is displayed; 
+initialise the product data by calling the API and 
+simply passing it down to the sub-components for rendering
+
+Usage: Use the styled css-grid components to control what is shown where and based on screen size
+
+*/
+
 import React, { useState, useEffect, useCallback } from 'react';
 import client from '../api/client';
 import styled from 'styled-components';
+import { Typography } from '@mui/material';
 import { ProductReviewsData } from '../types/types';
 
 // Import sub components
@@ -17,7 +28,7 @@ type ProductReviewPageProps = {
 };
 
 // Styles
-const Grid = styled.div`
+const SGrid = styled.div`
   max-width: 1500px;
   margin: 0 auto;
   display: grid;
@@ -68,6 +79,7 @@ const Main = styled.div`
 const SHeader = styled.div`
   grid-area: header;
   justify-self: center;
+  width: 100%;
 `;
 
 const SGraph1 = styled.div`
@@ -95,19 +107,25 @@ const SMain = styled(Main)`
   margin-bottom: 5vh;
 `;
 
-// Main components
 const ProductReviewPage = ({
   productId,
   productTitle,
 }: ProductReviewPageProps) => {
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<ProductReviewsData | null>();
+  const [loading, setLoading] = useState(true); // Set to true when data loading from API. Set to false once call ended (success or failure)
+  const [data, setData] = useState<ProductReviewsData | null>(); // Product review data
+  const [error, setError] = useState(''); // Init error
 
+  // Initialisation call to the API, which on success, setData to response; on error, skip setting the data.
   const handleInit = useCallback(async () => {
     try {
+      // Call the API, get reviewsData to show
       const response = await client.get(`/product/${productId}/reviewsData`);
       if (response.status === 200 && response.data) {
         setData(response.data);
+      } else {
+        if (response.data?.message) {
+          setError(response.data?.message);
+        }
       }
       setLoading(false);
     } catch (err) {
@@ -123,33 +141,43 @@ const ProductReviewPage = ({
   }, [handleInit, loading]);
 
   return (
-    <Grid>
+    <SGrid>
       <SHeader>
         <ProductName title={productTitle} />
       </SHeader>
-      <SMain>
-        {loading && <p>Loading product data...</p>}
-        {data && (
-          <>
-            <SGraph1>
-              <ProductAverageRating
-                score={data.averageReviewsRating}
-                monthlyData={data.monthlyData}
-              />
-            </SGraph1>
-            <SGraph2>
-              <ProductRatingsHistogram histogram={data.ratingsHistogram} />
-            </SGraph2>
-            <SForm>
-              <ReviewForm productId={productId} submitCallback={handleInit} />
-            </SForm>
-            <SLatest>
-              <LatestReview reviews={data.latestReviews} />
-            </SLatest>
-          </>
-        )}
-      </SMain>
-    </Grid>
+      {loading ? (
+        <Typography variant='body1' gutterBottom component='div'>
+          Loading product data...
+        </Typography>
+      ) : data ? (
+        <SMain>
+          <SGraph1>
+            <ProductAverageRating
+              score={data.averageReviewsRating}
+              monthlyData={data.monthlyData}
+            />
+          </SGraph1>
+          <SGraph2>
+            <ProductRatingsHistogram histogram={data.ratingsHistogram} />
+          </SGraph2>
+          <SForm>
+            <ReviewForm productId={productId} submitCallback={handleInit} />
+          </SForm>
+          <SLatest>
+            <LatestReview reviews={data.latestReviews} />
+          </SLatest>
+        </SMain>
+      ) : (
+        <Typography
+          variant='body1'
+          gutterBottom
+          component='div'
+          style={{ width: '100%' }}
+        >
+          {error}
+        </Typography>
+      )}
+    </SGrid>
   );
 };
 

@@ -1,6 +1,7 @@
 // Import modules
 const products = require('express').Router();
 
+// Fake data set replacing the database for this example. As long as the server is not restarted, can be updated.
 let productsFakeReviewsData = {
   1: {
     latestReviews: [
@@ -35,8 +36,8 @@ let productsFakeReviewsData = {
     ],
     averageReviewsRating: 4.5,
     monthlyData: [
-      { month: 'Sep-21', value: 4.2 },
-      { month: 'Oct-21', value: 4.4 },
+      { month: 'Sep-21', value: 3.2 },
+      { month: 'Oct-21', value: 3.4 },
       { month: 'Nov-21', value: 4.1 },
       { month: 'Dec-21', value: 4.5 },
     ],
@@ -51,6 +52,7 @@ let productsFakeReviewsData = {
   },
 };
 
+// Add a new review to the fake-DB object
 const processReview = (data, productId) => {
   try {
     const newRatingsHistogram = {
@@ -72,6 +74,7 @@ const processReview = (data, productId) => {
     productsFakeReviewsData = {
       ...productsFakeReviewsData,
       [productId]: {
+        ...productsFakeReviewsData[productId],
         latestReviews: [
           ...productsFakeReviewsData[productId].latestReviews,
           {
@@ -93,8 +96,10 @@ const processReview = (data, productId) => {
 // GET
 products.get(`/:productId/reviewsData`, async (req, res) => {
   try {
+    console.log('GET product reviews data');
     const { productId } = req.params;
 
+    // Simulate getting the data for this productId
     const productData = productsFakeReviewsData[+productId];
     if (productData) {
       res.status(200).json(productData);
@@ -109,9 +114,11 @@ products.get(`/:productId/reviewsData`, async (req, res) => {
 // POST
 products.post(`/:productId/review`, async (req, res) => {
   try {
+    console.log('POST new product review data');
     const { productId } = req.params;
     const data = req.body;
 
+    // Simualte updating the db with the new data
     if (productsFakeReviewsData[+productId]) {
       processReview(data, productId);
       res.status(200).send();

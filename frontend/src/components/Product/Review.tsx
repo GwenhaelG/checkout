@@ -1,3 +1,11 @@
+/* Review
+
+Purpose: To display one review. 
+
+Usage: Use the styled css-grid components to control what is shown where and based on screen size
+
+*/
+
 import React from 'react';
 import styled from 'styled-components';
 
@@ -36,7 +44,7 @@ type ReviewProps = {
 
 const Review = ({ review }: ReviewProps) => {
   return (
-    <SReview>
+    <SReview data-testid='review'>
       {review?.comment && <SComment>"{review.comment}"</SComment>}
       <SName>{review.authorName}</SName>
       <SRating>

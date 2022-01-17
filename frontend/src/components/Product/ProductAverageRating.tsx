@@ -1,3 +1,11 @@
+/* ProductAverageRating
+
+Purpose: To display the current average rating and to show the historical values
+
+Usage: Use the styled css-grid components to control what is shown where and based on screen size.
+
+*/
+
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Typography, Rating } from '@mui/material';
@@ -39,30 +47,32 @@ interface ProductAverageRatingProps
   monthlyData: MonthlyData[];
 }
 
-function getWindowDimensions() {
+// Helper function to return the window dimensions
+const getWindowDimensions = () => {
   const { innerWidth: width, innerHeight: height } = window;
   return {
     width,
     height,
   };
-}
+};
 
-function useWindowDimensions() {
+// Helper hook to return the current window dimensions
+const useWindowDimensions = () => {
   const [windowDimensions, setWindowDimensions] = useState(
     getWindowDimensions()
   );
 
   useEffect(() => {
-    function handleResize() {
+    const handleResize = () => {
       setWindowDimensions(getWindowDimensions());
-    }
+    };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return windowDimensions;
-}
+};
 
 const ProductAverageRating = ({
   score,

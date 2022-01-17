@@ -1,3 +1,12 @@
+/* ProductRatingsHistogram
+
+Purpose: To display the current split of ratings by number of stars
+
+Usage: Pass it a set of key-value pairs representing the different bars, and it will display them as individual
+lines, and add the count of ratings out of total and the star representation
+
+*/
+
 import React from 'react';
 import styled from 'styled-components';
 

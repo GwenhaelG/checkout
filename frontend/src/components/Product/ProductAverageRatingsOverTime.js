@@ -1,3 +1,13 @@
+/* ProductAverageRatingsOverTime
+
+Purpose: To show the historical values
+
+Usage: Pass it monthly data, and it will show it in a nice graph.
+
+Depends on: chart.js v3
+
+*/
+
 import React, { useRef, useEffect } from 'react';
 import {
   Chart,
@@ -8,9 +18,11 @@ import {
   LinearScale,
 } from 'chart.js';
 
+// Empty chart var
 let ratingsMonthChart;
 
 const ProductAverageRatingsOverTime = ({ monthlyData }) => {
+  // Register chart elements
   Chart.register(
     LineElement,
     PointElement,
@@ -19,9 +31,14 @@ const ProductAverageRatingsOverTime = ({ monthlyData }) => {
     LinearScale
   );
 
+  // Create empty ref
   const ratingsMonthChartRef = useRef(null);
+
+  // On change of monthlyData prop or once canvas === ref.current exists, run
   useEffect(() => {
+    // Skip if not data
     if (monthlyData && monthlyData.length > 0) {
+      // Format data sets
       var dataSets = {
         labels: monthlyData.map((item) => item.month),
         datasets: [
@@ -33,9 +50,12 @@ const ProductAverageRatingsOverTime = ({ monthlyData }) => {
         ],
       };
 
+      // If chart already exists, detroy it first, to make sure no issue on re-rendering
       if (typeof ratingsMonthChart !== 'undefined') ratingsMonthChart.destroy();
 
+      // If canvas exists
       if (ratingsMonthChartRef.current) {
+        // create chart using set of options
         ratingsMonthChart = new Chart(ratingsMonthChartRef.current, {
           type: 'line',
           data: dataSets,

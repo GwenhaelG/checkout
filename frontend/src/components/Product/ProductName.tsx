@@ -1,8 +1,15 @@
+/* ProductName
+
+Purpose: To display the product name
+Usage: Pass a title to be displayed
+
+*/
+
 import React from 'react';
 import styled from 'styled-components';
 
 const SH2 = styled.h2`
-  margin: 30px;
+  margin: 10px;
   padding: 40px 20px 40px 20px;
   color: black;
   background-color: #f3f2f7;
