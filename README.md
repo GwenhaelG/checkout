@@ -4,18 +4,17 @@
 
 Creating a page for users to see reviews and data related to a product and write a review for same product.
 
-_Front end_
-React v17
+_Front end_: React v17
 
-_Back end_
-Node.js + Express.js with mock DB
+_Back end_: Node.js + Express.js with mock DB
 
 ## How to Install and Run the Project
 
 1. Clone the **repo**
-2. Install dependencies by running `npm i` in **clone repo**
+2. Install dependencies by running `npm i` in **/api** and **/frontend**
 3. In **/api** run `npm run start` and the server will be running at localhost:3001
 4. In **/frontend** run `npm run start` and the website will be available at localhost:3000
+5. Try different screen sizes
 
 ## How to Test the Project
 
@@ -25,6 +24,7 @@ Run `npm run test` in the **frontend** to run the suite of tests
 
 Extensive commenting is provided within the project, but overall the main choice in terms of architecture are as follows:
 
+- Provided different layouts based on screen size to adapt to mobile, mid-sized screen, large screens
 - Use of Material UI for some base components: TextField, Typography, etc. Otherwise, all re-implemented for additional control and less reliance on external library;
 - Use of CSS grid for layout over flex, and strict separation between layout and content.
 - Components follow a pattern of having a main container in charge of the layout of the sub-components regardless of the characteristics of these components; and sub-components purely in charge of displaying content.
