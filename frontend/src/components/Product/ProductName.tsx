@@ -3,8 +3,10 @@ import styled from 'styled-components';
 
 const SH2 = styled.h2`
   margin: 30px;
-  padding: 10px 5px 10px 5px;
+  padding: 40px 20px 40px 20px;
   color: black;
+  background-color: #f3f2f7;
+  border-radius: 15px;
 `;
 
 interface ProductNameProps extends React.ComponentPropsWithoutRef<'div'> {

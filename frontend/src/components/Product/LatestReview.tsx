@@ -11,8 +11,10 @@ interface LatestReviewProps extends React.ComponentPropsWithoutRef<'div'> {
 }
 
 const SReviews = styled.div`
-  margin: 10px;
   padding: 10px;
+  background-color: #f3f2f7;
+  border-radius: 15px;
+  height: 100%;
 `;
 
 const LatestReview = ({ reviews }: LatestReviewProps) => {
@@ -26,7 +28,7 @@ const LatestReview = ({ reviews }: LatestReviewProps) => {
       >
         Latest reviews
       </Typography>
-      {reviews.slice(0, 10).map((item, index) => (
+      {reviews.slice(0, 5).map((item, index) => (
         <Review review={item} key={index} />
       ))}
     </SReviews>

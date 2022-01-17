@@ -15,7 +15,7 @@ const Review = () => {
           variant='h4'
           gutterBottom
           component='div'
-          style={{ marginBottom: '5vh', padding: '20px' }}
+          style={{ marginBottom: '2vh', padding: '20px' }}
         >
           Checkout.com interview
         </Typography>

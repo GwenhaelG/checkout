@@ -1,20 +1,20 @@
-import { Rating } from '@mui/material';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Typography } from '@mui/material';
+import { Typography, Rating } from '@mui/material';
+import ProductAverageRatingsOverTime from './ProductAverageRatingsOverTime';
 
 const SAvRating = styled.div`
-  margin: 10px;
+  background-color: #f3f2f7;
+  border-radius: 15px;
   padding: 10px;
   display: grid;
+  height: 100%;
   grid-template-columns: repeat(1, 1fr);
   grid-template-rows: auto;
   grid-template-areas:
     'title'
     'star'
     'rating';
-  border: 1px solid lightgrey;
-  border-radius: 5px;
 `;
 
 const STitle = styled.div`
@@ -28,12 +28,46 @@ const SRating = styled.div`
   grid-area: rating;
 `;
 
+interface MonthlyData {
+  month: string;
+  value: number;
+}
+
 interface ProductAverageRatingProps
   extends React.ComponentPropsWithoutRef<'div'> {
   score: number;
+  monthlyData: MonthlyData[];
 }
 
-const ProductAverageRating = ({ score }: ProductAverageRatingProps) => {
+function getWindowDimensions() {
+  const { innerWidth: width, innerHeight: height } = window;
+  return {
+    width,
+    height,
+  };
+}
+
+function useWindowDimensions() {
+  const [windowDimensions, setWindowDimensions] = useState(
+    getWindowDimensions()
+  );
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimensions());
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowDimensions;
+}
+
+const ProductAverageRating = ({
+  score,
+  monthlyData,
+}: ProductAverageRatingProps) => {
   return (
     <SAvRating>
       <STitle>
@@ -51,6 +85,9 @@ const ProductAverageRating = ({ score }: ProductAverageRatingProps) => {
         <Rating value={score} precision={0.1} readOnly name='read-only' />
       </SStar>
       <SRating>{Math.round(score * 100) / 100} out of 5</SRating>
+      {useWindowDimensions().width > 400 && (
+        <ProductAverageRatingsOverTime monthlyData={monthlyData} />
+      )}
     </SAvRating>
   );
 };

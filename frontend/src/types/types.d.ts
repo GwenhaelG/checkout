@@ -13,4 +13,8 @@ export type ProductReviewsData = {
   latestReviews: ProductReview[];
   averageReviewsRating: number;
   ratingsHistogram: ratingsHistogram;
+  monthlyData: {
+    month: string;
+    value: number;
+  }[];
 };

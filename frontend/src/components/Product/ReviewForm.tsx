@@ -4,16 +4,23 @@ import React, {
   useState,
   useCallback,
   useMemo,
+  useEffect,
 } from 'react';
+import validator from 'validator';
 import styled from 'styled-components';
-import { TextField, Rating, Button } from '@mui/material';
+import { TextField, Rating, Button, Typography } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import client from '../../api/client';
 
+const SCard = styled.div`
+  padding: 10px;
+  background-color: #f3f2f7;
+  border-radius: 15px;
+  height: 100%;
+`;
+
 const SDiv = styled.div`
-  margin: 10px;
   padding: 10px 5px 10px 5px;
-  width: 100%;
   align-items: center;
   justify-content: center;
   display: flex;
@@ -22,12 +29,23 @@ const SDiv = styled.div`
 const SGrid = styled.div`
   display: grid;
   grid-gap: 1rem;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
   grid-template-rows: auto;
   grid-template-areas:
-    'comment comment'
-    'name email'
-    'rating submit';
+    'comment'
+    'name'
+    'email'
+    'rating'
+    'submit';
+
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas:
+      'comment comment'
+      'name email'
+      'rating submit';
+  }
 `;
 
 interface ReviewFormProps extends React.ComponentPropsWithoutRef<'div'> {
@@ -38,7 +56,15 @@ interface ReviewFormProps extends React.ComponentPropsWithoutRef<'div'> {
 interface TInput {
   label?: string;
   placeholder?: string;
-  render: (value: string | number) => void;
+  gridArea?: string;
+  render: ({
+    value,
+    errorMessage,
+  }: {
+    value: string | number;
+    errorMessage?: string;
+  }) => void;
+  error: (value: string | number) => string;
 }
 
 interface TInputChange {
@@ -48,20 +74,25 @@ interface TInputChange {
 
 const ReviewForm = ({ productId, submitCallback }: ReviewFormProps) => {
   const [submitting, setSubmitting] = useState(false);
+  const [disabled, setDisabled] = useState(false);
 
   const initialData = useMemo(
     () => ({
       authorName: {
         value: '',
+        errorMessage: ' ',
       },
       authorEmail: {
         value: '',
+        errorMessage: ' ',
       },
       comment: {
         value: '',
+        errorMessage: ' ',
       },
       rating: {
-        value: 0,
+        value: 3,
+        errorMessage: ' ',
       },
     }),
     []
@@ -72,7 +103,11 @@ const ReviewForm = ({ productId, submitCallback }: ReviewFormProps) => {
       try {
         setData((data) => ({
           ...data,
-          [id]: { ...data[id], value: value },
+          [id]: {
+            ...data[id],
+            value: value,
+            errorMessage: inputs[id].error(value),
+          },
         }));
       } catch (err) {
         console.error((err as Error).message);
@@ -84,12 +119,20 @@ const ReviewForm = ({ productId, submitCallback }: ReviewFormProps) => {
   const inputs: { [key: string]: TInput } = useMemo(
     () => ({
       authorName: {
-        render: (value: string | number) => (
+        gridArea: 'name',
+        render: ({
+          value,
+          errorMessage,
+        }: {
+          value: string | number;
+          errorMessage?: string;
+        }) => (
           <TextField
             fullWidth
-            style={{ gridArea: 'name' }}
             value={value}
-            placeholder='Your name'
+            error={errorMessage !== ' '}
+            helperText={errorMessage}
+            placeholder='Your name *'
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
               handleInputChange({
                 id: 'authorName',
@@ -98,15 +141,25 @@ const ReviewForm = ({ productId, submitCallback }: ReviewFormProps) => {
             }
           />
         ),
+        error: (value: string | number) =>
+          value !== '' && value.toString().length >= 3 ? ' ' : 'Compulsory',
       },
       authorEmail: {
-        render: (value: string | number) => (
+        gridArea: 'email',
+        render: ({
+          value,
+          errorMessage,
+        }: {
+          value: string | number;
+          errorMessage?: string;
+        }) => (
           <TextField
             fullWidth
-            style={{ gridArea: 'email' }}
             value={value}
+            error={errorMessage !== ' '}
+            helperText={errorMessage}
             type='email'
-            placeholder='Your email'
+            placeholder='Your email *'
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
               handleInputChange({
                 id: 'authorEmail',
@@ -115,13 +168,23 @@ const ReviewForm = ({ productId, submitCallback }: ReviewFormProps) => {
             }
           />
         ),
+        error: (value: string | number) =>
+          validator.isEmail(value.toString()) ? ' ' : 'Email wrongly formatted',
       },
       comment: {
-        render: (value: string | number) => (
+        gridArea: 'comment',
+        render: ({
+          value,
+          errorMessage,
+        }: {
+          value: string | number;
+          errorMessage?: string;
+        }) => (
           <TextField
             fullWidth
-            style={{ gridArea: 'comment' }}
             value={value}
+            error={errorMessage !== ' '}
+            helperText={errorMessage}
             multiline
             rows={4}
             placeholder='Your comment'
@@ -133,12 +196,18 @@ const ReviewForm = ({ productId, submitCallback }: ReviewFormProps) => {
             }
           />
         ),
+        error: (value: string | number) => ' ',
       },
       rating: {
         label: 'Your rating',
-        render: (value: string | number) => (
+        gridArea: 'rating',
+        render: ({
+          value,
+        }: {
+          value: string | number;
+          errorMessage?: string;
+        }) => (
           <Rating
-            style={{ gridArea: 'rating' }}
             name='hover-feeedback'
             value={+value}
             placeholder='Your rating'
@@ -153,52 +222,98 @@ const ReviewForm = ({ productId, submitCallback }: ReviewFormProps) => {
             }
           />
         ),
+        error: (value: string | number) => ' ',
       },
     }),
     [handleInputChange]
   );
 
   const [data, setData] =
-    useState<{ [key: string]: { value: string | number } }>(initialData);
+    useState<{
+      [key: string]: { value: string | number; errorMessage?: string };
+    }>(initialData);
+
+  const handleValidation = useCallback(() => {
+    return Object.keys(inputs).reduce((acc, cur) => {
+      let test = inputs[cur].error(data[cur].value);
+      setData({
+        ...data,
+        [cur]: { ...data[cur], errorMessage: (data[cur].errorMessage = test) },
+      });
+      return acc && test === ' ';
+    }, true);
+  }, [inputs, data]);
 
   const handleSubmit = useCallback(async () => {
     try {
       setSubmitting(true);
-      const response = await client.post(`/product/${productId}/review`, data);
-      if (response.status === 200) {
-        setData(initialData);
-        submitCallback();
+      if (handleValidation()) {
+        const response = await client.post(
+          `/product/${productId}/review`,
+          data
+        );
+        if (response.status === 200) {
+          setData(initialData);
+          submitCallback();
+        }
+        setSubmitting(false);
+      } else {
+        setSubmitting(false);
       }
-      setSubmitting(false);
     } catch (err) {
       console.error((err as Error).message);
     }
-  }, [productId, initialData, submitCallback, data]);
+  }, [productId, initialData, submitCallback, data, handleValidation]);
+
+  // console.log(data);
+
+  useEffect(() => {
+    const test = Object.keys(inputs).reduce(
+      (acc, cur) => acc && inputs[cur].error(data[cur].value) === ' ',
+      true
+    );
+    setDisabled(!test);
+  }, [inputs, data]);
 
   return (
-    <SGrid>
-      {Object.keys(data).map(
-        (item, index) =>
-          data[item] && (
-            <SDiv key={index}>
-              {inputs[item]?.label && (
-                <label htmlFor={item} style={{ paddingRight: '5px' }}>
-                  {inputs[item].label}
-                </label>
-              )}
-              {inputs[item].render(data[item].value)}
-            </SDiv>
-          )
-      )}
-      <Button
-        style={{ gridArea: 'submit' }}
-        disabled={submitting}
-        onClick={handleSubmit}
-        variant='outlined'
+    <SCard>
+      <Typography
+        variant='h6'
+        gutterBottom
+        component='div'
+        style={{ justifyItems: 'left', paddingTop: '10px' }}
       >
-        {submitting ? 'Submitting...' : 'Submit'}
-      </Button>
-    </SGrid>
+        Submit your review
+      </Typography>
+      <SGrid>
+        {Object.keys(data).map(
+          (item, index) =>
+            data[item] && (
+              <SDiv key={index} style={{ gridArea: inputs[item].gridArea }}>
+                {inputs[item]?.label && (
+                  <label htmlFor={item} style={{ paddingRight: '5px' }}>
+                    {inputs[item].label}
+                  </label>
+                )}
+                {inputs[item].render({
+                  value: data[item].value,
+                  errorMessage: data[item]?.errorMessage,
+                })}
+              </SDiv>
+            )
+        )}
+        <SDiv>
+          <Button
+            style={{ gridArea: 'submit' }}
+            disabled={submitting || disabled}
+            onClick={handleSubmit}
+            variant='outlined'
+          >
+            {submitting ? 'Submitting...' : 'Submit'}
+          </Button>
+        </SDiv>
+      </SGrid>
+    </SCard>
   );
 };
 

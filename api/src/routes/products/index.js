@@ -34,6 +34,12 @@ let productsFakeReviewsData = {
       },
     ],
     averageReviewsRating: 4.5,
+    monthlyData: [
+      { month: 'Sep-21', value: 4.2 },
+      { month: 'Oct-21', value: 4.4 },
+      { month: 'Nov-21', value: 4.1 },
+      { month: 'Dec-21', value: 4.5 },
+    ],
     ratingsHistogram: {
       0: 0,
       1: 1,

@@ -42,8 +42,8 @@ const Main = styled.div`
     'header header header header'
     'graph1 graph1 graph1 graph1'
     'graph2 graph2 graph2 graph2'
-    'form form form form'
-    'latest latest latest latest';
+    'latest latest latest latest'
+    'form form form form';
 
   @media (min-width: 900px) {
     grid-template-columns: repeat(4, 1fr);
@@ -51,8 +51,8 @@ const Main = styled.div`
     grid-template-areas:
       'header header header header'
       'graph1 graph1 graph2 graph2'
-      'form form form form'
-      'latest latest latest latest';
+      'latest latest latest latest'
+      'form form form form';
   }
 
   @media (min-width: 1200px) {
@@ -60,8 +60,8 @@ const Main = styled.div`
     grid-template-rows: auto;
     grid-template-areas:
       'header header header .'
-      'form form form graph1'
-      'latest latest latest graph2';
+      'latest latest latest graph1'
+      'form form form graph2';
   }
 `;
 
@@ -72,22 +72,27 @@ const SHeader = styled.div`
 
 const SGraph1 = styled.div`
   grid-area: graph1;
+  margin: 10px;
 `;
 
 const SGraph2 = styled.div`
   grid-area: graph2;
+  margin: 10px;
 `;
 
 const SLatest = styled.div`
   grid-area: latest;
+  margin: 10px;
 `;
 
 const SForm = styled.div`
   grid-area: form;
+  margin: 10px;
 `;
 
 const SMain = styled(Main)`
   grid-area: main;
+  margin-bottom: 5vh;
 `;
 
 // Main components
@@ -117,8 +122,6 @@ const ProductReviewPage = ({
     }
   }, [handleInit, loading]);
 
-  console.log(data);
-
   return (
     <Grid>
       <SHeader>
@@ -129,7 +132,10 @@ const ProductReviewPage = ({
         {data && (
           <>
             <SGraph1>
-              <ProductAverageRating score={data.averageReviewsRating} />
+              <ProductAverageRating
+                score={data.averageReviewsRating}
+                monthlyData={data.monthlyData}
+              />
             </SGraph1>
             <SGraph2>
               <ProductRatingsHistogram histogram={data.ratingsHistogram} />

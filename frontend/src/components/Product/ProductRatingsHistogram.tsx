@@ -6,10 +6,10 @@ import { LinearProgress, Rating, Typography } from '@mui/material';
 import { ratingsHistogram } from '../../types/types';
 
 const SHistogram = styled.div`
-  margin: 10px;
   padding: 10px;
-  border: 1px solid lightgrey;
-  border-radius: 5px;
+  background-color: #f3f2f7;
+  border-radius: 15px;
+  height: 100%;
 `;
 
 const STitle = styled.div`
